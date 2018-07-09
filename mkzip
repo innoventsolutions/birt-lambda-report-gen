@@ -1,5 +1,5 @@
 #!/bin/sh
-PROJECT=$HOME/projects/birt-lambda
+PROJECT=$HOME/projects/birt-lambda-report-gen
 ZIP=$PROJECT/zip
 rm -rf $ZIP
 mkdir -p $ZIP/lib
