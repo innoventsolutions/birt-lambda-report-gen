@@ -4,6 +4,7 @@
 ## Overview
 This project allows an AWS Lambda function to execute a BIRT report and deposit the report result to an S3 location.
 ### Installation Instructions
+Note - not finished, work in progress, do not use
 1. Clone the birt-lambda-report-gen project: git clone git@github.com:innoventsolutions/birt-lambda-report-gen.git
 1. Build the project: mvn clean package
 1. Modify mkzip if necessary so it points to where you cloned the project by changing the PROJECT variable assignment on the second line.
