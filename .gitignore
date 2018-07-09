@@ -1,0 +1,14 @@
+log
+build
+bin
+classpath-backup
+classpath
+/target/
+birt-lambda.zip
+dependency-reduced-pom.xml
+test
+test.pdf
+/zip/
+/.gradle/
+/.settings/
+mvn.log
