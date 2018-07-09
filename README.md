@@ -1,1 +1,0 @@
-# lamda-report-gen
