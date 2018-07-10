@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -72,7 +74,13 @@ public class ReportRunnerHandler implements RequestHandler<ReportRunRequest, Gat
 				}
 			}
 			catch (final Exception e) {
-				e.printStackTrace();
+				final Map<String, String> headers = new HashMap<>();
+				final StringWriter stringWriter = new StringWriter();
+				final PrintWriter printWriter = new PrintWriter(stringWriter);
+				e.printStackTrace(printWriter);
+				final String body = stringWriter.toString();
+				final GatewayResponse response = new GatewayResponse(false, 500, headers, body);
+				return response;
 			}
 		}
 		final Map<String, String> headers = new HashMap<>();
