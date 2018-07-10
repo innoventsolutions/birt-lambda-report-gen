@@ -1,7 +1,4 @@
-# birt-lambda-report-gen
-
-## Lambda-BIRT Integration
-## Overview
+# Lambda-BIRT Integration
 This project allows an AWS Lambda function to execute a BIRT report and deposit the report result to an S3 location.
 ### Notes
 1. There has not been an official Maven dependency that works since version 4.4.  See https://www.eclipse.org/forums/index.php/t/1081625/.  But you can force Maven to use the BIRT runtime jars.
@@ -9,7 +6,7 @@ This project allows an AWS Lambda function to execute a BIRT report and deposit 
 1. Zip file is too big to be uploaded directly so must go to S3 first.
 
 ### Build Instructions
-I was able to build with Maven by installing all the jar files from the BIRT runtime into my own Nexus server.  The included script file birt-maven-install does this.  However it isn't strictly necessary because we don't use the resulting jar file.  Instead we create a zip file consisting of the classes from this project and all the dependent jars.  The script file mkzip does this.  It gets the classes from target/classes, the BIRT jars from the BIRT 4.8.0 runtime and other jars from the .m2 repository.  The fact that the eclipse project has the maven nature causes the classes to be deposited in target/classes and the .m2 repository to contain all the necessary jars.  If you add all the BIRT jars to the build path then you don't need to run your own Nexus server and there will be no errors in eclipse, but you won't be able to build with maven.
+I was able to build with Maven by installing all the jar files from the BIRT runtime into my own Nexus server.  The included script file birt-maven-install does this.  However it isn't strictly necessary because we don't use the resulting jar file.  Instead we create a zip file consisting of the classes from this project and all the dependent jars.  The script file mkzip does this.  It gets the classes from target/classes, the BIRT jars from the BIRT runtime and other jars from the .m2 repository.  The fact that the eclipse project has the maven nature causes the classes to be deposited in target/classes and the .m2 repository to contain all the necessary jars just by opening the project in eclipse.  If you add all the BIRT jars to the build path then you don't need to run your own Nexus server and there will be no errors in eclipse, but you won't be able to build with maven.
 
 To build without your own Nexus server:
 1. Download BIRT runtime 4.8.0 from http://download.eclipse.org/birt/downloads/.
