@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -18,13 +19,13 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 
-public class ReportRunnerHandler implements RequestHandler<ReportRunRequest, ReportRunResponse> {
+public class ReportRunnerHandler implements RequestHandler<ReportRunRequest, GatewayResponse> {
 	public ReportRunnerHandler() {
 		URL.setURLStreamHandlerFactory(new S3URLStreamHandlerFactory());
 	}
 
 	@Override
-	public ReportRunResponse handleRequest(final ReportRunRequest input, final Context context) {
+	public GatewayResponse handleRequest(final ReportRunRequest input, final Context context) {
 		final String designUrl = input.getDesignUrl();
 		final Map<String, String> parameters = input.getParameters();
 		final String format = input.getFormat();
@@ -74,8 +75,9 @@ public class ReportRunnerHandler implements RequestHandler<ReportRunRequest, Rep
 				e.printStackTrace();
 			}
 		}
-		final ReportRunResponse response = new ReportRunResponse();
-		response.setSuccess(true);
+		final Map<String, String> headers = new HashMap<>();
+		final String body = "success";
+		final GatewayResponse response = new GatewayResponse(false, 200, headers, body);
 		return response;
 	}
 
