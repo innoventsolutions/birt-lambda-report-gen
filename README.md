@@ -10,9 +10,20 @@ This project allows an AWS Lambda function to execute a BIRT report and deposit 
 
 ### Build Instructions
 I was able to build with Maven by installing all the jar files from the BIRT runtime into my own Nexus server.  The included script file birt-maven-install does this.  However it isn't strictly necessary because we don't use the resulting jar file.  Instead we create a zip file consisting of the classes from this project and all the dependent jars.  The script file mkzip does this.  It gets the classes from target/classes, the BIRT jars from the BIRT 4.8.0 runtime and other jars from the .m2 repository.  The fact that the eclipse project has the maven nature causes the classes to be deposited in target/classes and the .m2 repository to contain all the necessary jars.  If you add all the BIRT jars to the build path then you don't need to run your own Nexus server and there will be no errors in eclipse, but you won't be able to build with maven.
+
+To build without your own Nexus server:
 1. Download BIRT runtime 4.8.0 from http://download.eclipse.org/birt/downloads/.
 1. Clone the birt-lambda-report-gen project: git clone git@github.com:innoventsolutions/birt-lambda-report-gen.git
 1. Open the project in eclipse and make sure the build path contains all the jar files from the BIRT runtime ReportEngine/lib folder.  You might need to remove those dependencies from pom.xml.
+1. Modify mkzip if necessary to point to your .m2 repository and the BIRT runtime.
+1. Execute mkzip.
+
+To build with your own Nexus server:
+1. Download BIRT runtime 4.8.0 from http://download.eclipse.org/birt/downloads/.
+1. Clone the birt-lambda-report-gen project: git clone git@github.com:innoventsolutions/birt-lambda-report-gen.git
+1. Modify birt-maven-install so it contains the correct path to your private Nexus repository and your BIRT runtime installation.
+1. Execute birt-maven-install.
+1. Build the project with maven:  mvn clean package
 1. Modify mkzip if necessary to point to your .m2 repository and the BIRT runtime.
 1. Execute mkzip.
 
