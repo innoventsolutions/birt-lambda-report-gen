@@ -33,10 +33,10 @@ We can create two different handlers that will be used in two different ways by 
 1. In the Function Code section, choose Upload a file from Amazon S3.
 1. Set the S3 Link URL to the URL shown in S3 when you click on the zip file.
 1. Set the Handler to com.innoventsolutions.lambda.ProxyRequestHandler::handleRequest if you are going to execute with an API Gateway proxy request or com.innoventsolutions.lambda.JsonRequestHandler::handleRequest if you are going to execute with the Lambda function test button or an API Gateway non-proxy request.
-1.1. If necessary, create a custom role using the IAM console: https://console.aws.amazon.com/iam/home#/roles
-1.1. Click the Create Role button
-1.1. Choose the Lambda service
-1.1. Permissions: AWSLambdaBasicExecutionRole, AmazonS3FullAccess
+   1. If necessary, create a custom role using the IAM console: https://console.aws.amazon.com/iam/home#/roles
+   1. Click the Create Role button
+   1. Choose the Lambda service
+   1. Permissions: AWSLambdaBasicExecutionRole, AmazonS3FullAccess
 
 ### Execution Instructions
 There are three different ways to execute.
