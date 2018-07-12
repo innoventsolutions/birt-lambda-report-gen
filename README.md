@@ -25,28 +25,42 @@ To build with your own Nexus server:
 1. Execute mkzip.
 
 ### Installation Instructions
-1. Upload birt-lambda.zip to your S3 location
-1. Create the Lambda function by clicking Create Function on the Lambda console.
+We will need to upload the zip file via S3 because it is too big for a direct upload.
+We can create two different handlers that will be used in two different ways by the API Gateway (see Execution Instructions below).
+1. Upload birt-lambda.zip from your computer to your S3 bucket.
+1. Create a Lambda function by clicking Create Function on the Lambda console.
 1. Set the runtime to Java 8.
-1. Upload birt-lambda.zip from your S3 location (it's too big to be uploaded from a file).
-1. If necessary, create a custom role using the IAM console: https://console.aws.amazon.com/iam/home#/roles
-1. Click the Create Role button
-1. Choose the Lambda service
-1. Permissions: AWSLambdaBasicExecutionRole, AmazonS3FullAccess
+1. In the Function Code section, choose Upload a file from Amazon S3.
+1. Set the S3 Link URL to the URL shown in S3 when you click on the zip file.
+1. Set the Handler to com.innoventsolutions.lambda.ProxyRequestHandler::handleRequest if you are going to execute with an API Gateway proxy request or com.innoventsolutions.lambda.JsonRequestHandler::handleRequest if you are going to execute with the Lambda function test button or an API Gateway non-proxy request.
+1.1. If necessary, create a custom role using the IAM console: https://console.aws.amazon.com/iam/home#/roles
+1.1. Click the Create Role button
+1.1. Choose the Lambda service
+1.1. Permissions: AWSLambdaBasicExecutionRole, AmazonS3FullAccess
 
 ### Execution Instructions
+There are three different ways to execute.
+* Using the Test button on the Lambda function management page.
+* Using API Gateway in non-proxy mode.
+* Using API Gateway in proxy mode.
+
+#### Using the Test button on the Lambda function management page
 1. Upload a report design file to your S3 location.
-1. Create a new test event containing JSON similar to this:
-{
-  "designUrl": "s3:sstest0323/sqltest.rptdesign",
-  "outputBucket": "sstest0323",
-  "outputKey": "sql-test.html",
-  "parameters": {
-    "rowCount": 1
-  },
-  "format": "html",
-  "runThenRender": false
-}
+1. Create a new test event containing JSON similar to this: 
+    {
+      "designUrl": "s3:sstest0323/sqltest.rptdesign",
+      "outputBucket": "sstest0323",
+      "outputKey": "sql-test.html",
+      "parameters": {
+        "rowCount": 1
+      },
+      "format": "html",
+      "runThenRender": false
+    }
 Notes: sstest0323 is my S3 bucket name.  format can be any BIRT output format including pdf, xls, and html.  
 1. Click the run button.
 
+#### Using the API Gateway in non-proxy mode
+1. Upload a report design file to your S3 location.
+1. In API Gateway, create a resource such as /report-runner and a POST method.
+1. 

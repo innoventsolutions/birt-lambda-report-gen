@@ -78,6 +78,7 @@ public class ReportRunner {
 			IllegalAccessException, SQLException {
 		final IReportRunnable design = engine.openReportDesign(inputStream);
 		final long startTime = System.currentTimeMillis();
+		System.out.println("Starting runReport at " + new Date());
 		final IEngineTask task;
 		if (runThenRender) {
 			task = engine.createRunTask(design);
@@ -88,20 +89,22 @@ public class ReportRunner {
 		final Map<String, Object> appContext = task.getAppContext();
 		task.setAppContext(appContext);
 		for (final String key : parameters.keySet()) {
-			final String val = parameters.get(key);
-			if (val.startsWith("{")) {
+			final String value = parameters.get(key);
+			if (value.startsWith("{")) {
 				// This will be a set of multi-selects
-				final String stripBrack = val.substring(1, val.length() - 1);
+				final String stripBrack = value.substring(1, value.length() - 1);
 				final String[] fieldStrings = stripBrack.split(", *");
 				final Object[] fieldValues = new Object[fieldStrings.length];
 				int i = 0;
 				for (final String fieldString : fieldStrings) {
 					fieldValues[i++] = getFieldObject(fieldString);
 				}
+				System.out.println("setting parameter " + key + " = " + fieldValues);
 				task.setParameterValue(key, fieldValues);
 			}
 			else {
-				final Object fieldValue = getFieldObject(val);
+				final Object fieldValue = getFieldObject(value);
+				System.out.println("setting parameter " + key + " = " + fieldValue);
 				task.setParameterValue(key, fieldValue);
 			}
 		}
@@ -110,6 +113,7 @@ public class ReportRunner {
 			final IRunAndRenderTask rrTask = (IRunAndRenderTask) task;
 			final RenderOption options = getRenderOptions(format, outputFilename, env);
 			rrTask.setRenderOption(options);
+			System.out.println("Executing runAndRender task");
 			rrTask.run();
 		}
 		else if (task instanceof IRunTask) {
@@ -123,6 +127,7 @@ public class ReportRunner {
 				docFilename = outputFilename + ".rptdocument";
 			}
 			final File docFile = new File(docFilename);
+			System.out.println("Executing run task");
 			runTask.run(docFile.getAbsolutePath());
 			final IReportDocument rptdoc = engine.openReportDocument(docFile.getAbsolutePath());
 			final IRenderTask renderTask = engine.createRenderTask(rptdoc);
@@ -130,6 +135,7 @@ public class ReportRunner {
 			renderTask.setRenderOption(options);
 			final long totalVisiblePageCount = renderTask.getTotalPage();
 			renderTask.setPageRange("1-" + totalVisiblePageCount);
+			System.out.println("Executing render task");
 			renderTask.render();
 			renderTask.close();
 		}

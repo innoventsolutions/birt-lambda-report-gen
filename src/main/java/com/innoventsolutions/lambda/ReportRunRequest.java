@@ -9,6 +9,7 @@ public class ReportRunRequest {
 	private Map<String, String> parameters;
 	private String format;
 	private boolean runThenRender;
+	private boolean runThenRenderSet = false;
 
 	public String getFormat() {
 		return format;
@@ -40,6 +41,7 @@ public class ReportRunRequest {
 
 	public void setRunThenRender(final boolean runThenRender) {
 		this.runThenRender = runThenRender;
+		runThenRenderSet = true;
 	}
 
 	public String getOutputBucket() {
@@ -56,5 +58,13 @@ public class ReportRunRequest {
 
 	public void setOutputKey(final String outputKey) {
 		this.outputKey = outputKey;
+	}
+
+	public boolean isRunThenRenderSet() {
+		return runThenRenderSet;
+	}
+
+	public void setRunThenRenderSet(final boolean runThenRenderSet) {
+		this.runThenRenderSet = runThenRenderSet;
 	}
 }
