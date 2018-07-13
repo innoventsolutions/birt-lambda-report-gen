@@ -6,8 +6,8 @@ classpath
 /target/
 birt-lambda.zip
 dependency-reduced-pom.xml
-test
-test.pdf
+test*.pdf
+test*.rptdocument
 /zip/
 /.gradle/
 /.settings/

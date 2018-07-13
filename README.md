@@ -36,8 +36,9 @@ We can create two different handlers that will be used in two different ways by 
 1. If necessary, create a custom role using the IAM console: https://console.aws.amazon.com/iam/home#/roles
    1. Click the Create Role button
    1. Choose the Lambda service
-   1. Permissions: AWSLambdaBasicExecutionRole, AmazonS3FullAccess
+   1. Permissions: AWSLambdaBasicExecutionRole, AmazonS3FullAccess, and CloudWatchLogsFullAccess if you want logging of the standard output stream.
 1. Set the timeout to a minute or more.
+1. Click the Save button.
 
 ### Execution Instructions
 There are three different ways to execute.
