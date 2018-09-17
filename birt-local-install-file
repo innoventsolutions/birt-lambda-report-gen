@@ -1,0 +1,22 @@
+#!/bin/sh
+VERSION=$1
+FILENAME=$2
+POM=$3
+RE='([^/]+)\.jar'
+ARTIFACT_ID=$FILENAME
+if [[ $FILENAME =~ $RE ]]; then
+	ARTIFACT_ID=${BASH_REMATCH[1]}
+fi
+RE2='org\.eclipse\.birt\.runtime_'
+POMARG=''
+if [[ $ARTIFACT_ID =~ $RE2 ]]; then
+	echo "Using pomFile for $ARTIFACT_ID"
+	POMARG=" -DpomFile=$POM"
+fi
+REPO=/home/nexus/sonatype-work/nexus/storage/m2-releases
+mvn install:install-file -Dfile="$FILENAME"\
+ -DgroupId=com.innoventsolutions.birt.runtime\
+ -DartifactId=$ARTIFACT_ID\
+ -Dversion=$VERSION\
+ -Dpackaging=jar\
+ -DlocalRepositoryPath=$REPO/$POMARG

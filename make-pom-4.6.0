@@ -1,0 +1,17 @@
+#!/bin/sh
+BIRTLIB=$HOME/projects/birt-runtime-4_6_0/ReportEngine/lib
+REPO=/home/nexus/sonatype-work/nexus/storage/m2-releases
+POM=$HOME/projects/birt-runtime-4_6_0/org.eclipse.birt.runtime_4.6.0.pom
+echo $POM
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > $POM
+echo "<project xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\" xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" >> $POM
+echo "  <modelVersion>4.0.0</modelVersion>" >> $POM
+echo "  <groupId>com.innoventsolutions.birt.runtime</groupId>" >> $POM
+echo "  <artifactId>org.eclipse.birt.runtime</artifactId>" >> $POM
+echo "  <version>4.6.0</version>" >> $POM
+echo "  <packaging>jar</packaging>" >> $POM
+echo "  <name>org.eclipse.birt.runtime_4.6.0-20160607.jar</name>" >> $POM
+echo "  <dependencies>" >> $POM
+find $BIRTLIB -name "*.jar" -exec $HOME/projects/birt-lambda-report-gen/add-dep "4.6.0" "$POM" "{}" \;
+echo "  </dependencies>" >> $POM
+echo "</project>" >> $POM

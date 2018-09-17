@@ -1,0 +1,47 @@
+#!/bin/sh
+FILENAME=$1
+VERSION=$2
+BIRTLIB=$3
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+RE='([^/]+)\.jar'
+ARTIFACT_ID=$FILENAME
+if [[ $FILENAME =~ $RE ]]; then
+	ARTIFACT_ID=${BASH_REMATCH[1]}
+fi
+POM="/tmp/${ARTIFACT_ID}.pom"
+echo $POM
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > $POM
+echo "<project xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\" xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" >> $POM
+echo "  <modelVersion>4.0.0</modelVersion>" >> $POM
+echo "  <groupId>com.innoventsolutions.birt.runtime</groupId>" >> $POM
+echo "  <artifactId>$ARTIFACT_ID</artifactId>" >> $POM
+echo "  <version>$VERSION</version>" >> $POM
+echo "  <packaging>jar</packaging>" >> $POM
+echo "  <name>$ARTIFACT_ID</name>" >> $POM
+echo "  <description>A component of the BIRT runtime</description>" >> $POM
+echo "  <url>http://www.eclipse.org/projects/project.php?id=birt</url>" >> $POM
+echo "  <licenses>" >> $POM
+echo "    <license>" >> $POM
+echo "      <name>Eclipse Public License - v 1.0</name>" >> $POM
+echo "      <url>http://www.eclipse.org/org/documents/epl-v10.html</url>" >> $POM
+echo "    </license>" >> $POM
+echo "  </licenses>" >> $POM
+echo "  <scm>" >> $POM
+echo "    <url>http://git.eclipse.org/c/birt/org.eclipse.birt.git/</url>" >> $POM
+echo "    <connection>http://git.eclipse.org/c/birt/org.eclipse.birt.git/</connection>" >> $POM
+echo "  </scm>" >> $POM
+echo "  <developers>" >> $POM
+echo "    <developer>" >> $POM
+echo "      <name>Steve Schafer</name>" >> $POM
+echo "      <email>sschafer@innoventsolutions.com</email>" >> $POM
+echo "      <organization>Innovent Solutions</organization>" >> $POM
+echo "      <organizationUrl>http://www.innoventsolutions.com</organizationUrl>" >> $POM
+echo "    </developer>" >> $POM
+echo "  </developers>" >> $POM
+RE='org\.eclipse\.birt\.runtime_'
+if [[ $ARTIFACT_ID =~ $RE ]]; then
+	echo "  <dependencies>" >> $POM
+	find $BIRTLIB -name "*.jar" -exec "$DIR/add-dep" "$VERSION" "$POM" "{}" \;
+	echo "  </dependencies>" >> $POM
+fi
+echo "</project>" >> $POM

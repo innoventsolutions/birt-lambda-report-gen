@@ -1,0 +1,39 @@
+#!/bin/sh
+VERSION="$1"
+BIRTLIB="$2"
+URL="$3"
+TRIAL_RUN="$4"
+FILTER="$5"
+FILENAME="$6"
+if [[ $FILENAME =~ $FILTER ]]; then
+	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+	POM=$($DIR/make-ossrh-pom $FILENAME $VERSION $BIRTLIB)
+	echo $FILENAME
+	if [ "$TRIAL_RUN" == "t" ]; then
+		echo "POM = $POM"
+		echo "FILENAME = $FILENAME"
+	else
+		mvn -q gpg:sign-and-deploy-file\
+		 -Durl=$URL\
+		 -DrepositoryId=ossrh\
+		 -DpomFile=$POM\
+		 -Dgpg.passphrase=mash4-Folk-6adair\
+		 -Dfile=$FILENAME && \
+		JAVADOC_FILENAME=$($DIR/make-jarfile $FILENAME "javadoc") && \
+		mvn -q gpg:sign-and-deploy-file\
+		 -Durl=$URL\
+		 -DrepositoryId=ossrh\
+		 -DpomFile=$POM\
+		 -Dgpg.passphrase=mash4-Folk-6adair\
+		 -Dfile=$JAVADOC_FILENAME\
+		 -Dclassifier=javadoc && \
+		SOURCES_FILENAME=$($DIR/make-jarfile $FILENAME "sources") && \
+		mvn -q gpg:sign-and-deploy-file\
+		 -Durl=$URL\
+		 -DrepositoryId=ossrh\
+		 -DpomFile=$POM\
+		 -Dgpg.passphrase=mash4-Folk-6adair\
+		 -Dfile=$SOURCES_FILENAME\
+		 -Dclassifier=sources
+	fi
+fi

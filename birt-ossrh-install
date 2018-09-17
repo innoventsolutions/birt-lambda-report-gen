@@ -1,0 +1,50 @@
+#!/bin/sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+if [ "$1" == "6" ]; then
+	BIRTLIB=$HOME/projects/birt-runtime-4_6_0/ReportEngine/lib
+	VERSION="4.6.0"
+else
+	if [ "$1" == "8" ]; then
+		BIRTLIB=$HOME/projects/birt-runtime-4_8_0/ReportEngine/lib
+		VERSION="4.8.0"
+	else
+		echo "Argument 1 (version) must be 6 or 8"
+		exit 1
+	fi
+fi
+if [ "$2" == "s" ]; then
+	URL="https://oss.sonatype.org/content/repositories/snapshots/"
+	VERSION="${VERSION}-SNAPSHOT"
+else
+	if [ "$2" == "r" ]; then
+		URL="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+	else
+		echo "Argument 2 (snapshot/release) must be s or r"
+		exit 1
+	fi
+fi
+PROMPT=""
+TRIAL_RUN=""
+OPTS="$3"
+INDEX=0
+SIZE=${#OPTS}
+while [ $INDEX -lt $SIZE ]; do
+	OPT=${OPTS:INDEX:1}
+	if [ "$OPT" == "p" ]; then
+		PROMPT="p"
+	else
+		if [ "$OPT" == "t" ]; then
+			TRIAL_RUN="t"
+		fi
+	fi
+	let INDEX=INDEX+1
+done
+FILTER="$4"
+if [ -z "$FILTER" ]; then
+	FILTER=".*"
+fi
+echo "BIRTLIB = $BIRTLIB"
+echo "VERSION = $VERSION"
+echo "URL = $URL"
+find $BIRTLIB -name "*.jar" -print | sort\
+ | xargs -${PROMPT}L1 "$DIR/birt-ossrh-install-file" "$VERSION" "$BIRTLIB" "$URL" "$TRIAL_RUN" "$FILTER"

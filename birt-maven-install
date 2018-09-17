@@ -1,4 +1,0 @@
-#!/bin/sh
-BIRTLIB=$HOME/projects/birt-runtime-4_8_0/ReportEngine/lib
-REPO=/home/nexus/sonatype-work/nexus/storage/m2-releases
-find $BIRTLIB -name "*.jar" -exec mvn install:install-file -Dfile="{}" -DgroupId=org.eclipse.birt.runtime -DartifactId=org.eclipse.equinox.event_1.4.200.v20180426-0845 -Dversion=4.8.0 -Dpackaging=jar -DlocalRepositoryPath=$REPO/ \;

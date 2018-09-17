@@ -1,0 +1,10 @@
+#!/bin/sh
+OPTS="$1"
+INDEX=0
+SIZE=${#OPTS}
+echo "$SIZE"
+while [ $INDEX -lt $SIZE ]; do
+	OPT=${OPTS:INDEX:1}
+	echo "$INDEX $OPT"
+	let INDEX=INDEX+1
+done

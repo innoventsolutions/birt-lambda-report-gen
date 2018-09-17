@@ -1,0 +1,21 @@
+#!/bin/sh
+FILENAME=$1
+KIND=$2
+DIR=$(dirname $FILENAME)
+RE='([^/]+)\.jar'
+ARTIFACT_ID=$FILENAME
+if [[ $FILENAME =~ $RE ]]; then
+	ARTIFACT_ID=${BASH_REMATCH[1]}
+fi
+RE='([a-z0-9.]+)(.*)'
+JARFILE='unknown'
+if [[ $ARTIFACT_ID =~ $RE ]]; then
+	JARFILE="${BASH_REMATCH[1]}.${KIND}${BASH_REMATCH[2]}"
+fi
+JARFILE=/tmp/$JARFILE.jar
+TMPDIR=/tmp/$KIND-jar-dir
+mkdir -p $TMPDIR
+echo "No $KIND available" > $TMPDIR/readme.txt
+cd $TMPDIR
+jar cf $JARFILE *
+echo $JARFILE

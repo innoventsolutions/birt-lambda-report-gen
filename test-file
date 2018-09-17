@@ -1,0 +1,28 @@
+#!/bin/sh
+FILENAME=$1
+VERSION=$2
+BIRTLIB=$3
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+POM=$($DIR/make-ossrh-pom $FILENAME $VERSION $BIRTLIB)
+echo "mvn gpg:sign-and-deploy-file\
+ -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/\
+ -DrepositoryId=ossrh\
+ -DpomFile=$POM\
+ -Dgpg.passphrase=mash4-Folk-6adair\
+ -Dfile=$FILENAME"
+JAVADOC_FILENAME=$($DIR/make-jarfile $FILENAME "javadoc")
+echo "mvn gpg:sign-and-deploy-file\
+ -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/\
+ -DrepositoryId=ossrh\
+ -DpomFile=$POM\
+ -Dgpg.passphrase=mash4-Folk-6adair\
+ -Dfile=$JAVADOC_FILENAME\
+ -Dclassifier=javadoc"
+SOURCES_FILENAME=$($DIR/make-jarfile $FILENAME "sources")
+echo "mvn gpg:sign-and-deploy-file\
+ -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/\
+ -DrepositoryId=ossrh\
+ -DpomFile=$POM\
+ -Dgpg.passphrase=mash4-Folk-6adair\
+ -Dfile=$SOURCES_FILENAME\
+ -Dclassifier=sources"

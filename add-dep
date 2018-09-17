@@ -1,0 +1,19 @@
+#!/bin/sh
+VERSION=$1
+POM=$2
+FILENAME=$3
+RE='([^/]+)\.jar'
+ARTIFACT_ID=$FILENAME
+if [[ $FILENAME =~ $RE ]]; then
+	ARTIFACT_ID=${BASH_REMATCH[1]}
+fi
+RE2='org\.eclipse\.birt\.runtime_'
+if [[ $ARTIFACT_ID =~ $RE2 ]]; then
+	echo "    <!-- skipped $ARTIFACT_ID -->" >> $POM
+else
+	echo "    <dependency>" >> $POM
+	echo "      <groupId>com.innoventsolutions.birt.runtime</groupId>" >> $POM
+	echo "      <artifactId>$ARTIFACT_ID</artifactId>" >> $POM
+	echo "      <version>$VERSION</version>" >> $POM
+	echo "    </dependency>" >> $POM
+fi

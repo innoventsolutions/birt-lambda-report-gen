@@ -1,0 +1,7 @@
+#!/bin/sh
+POM=$(./make-pom-4.8.0)
+BIRTLIB=$HOME/projects/birt-runtime-4_8_0/ReportEngine/lib
+REPO=/home/nexus/sonatype-work/nexus/storage/m2-releases/com/innoventsolutions/birt/runtime
+mkdir -p $REPO
+INSTALL=$HOME/projects/birt-lambda-report-gen/birt-local-install-file
+find $BIRTLIB -name "*.jar" -exec "$INSTALL" "4.8.0" "{}" "$POM" \;
