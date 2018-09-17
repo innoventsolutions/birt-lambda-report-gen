@@ -12,3 +12,4 @@ test*.rptdocument
 /.gradle/
 /.settings/
 mvn.log
+*.zip
