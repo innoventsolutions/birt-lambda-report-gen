@@ -6,11 +6,21 @@ I was recently tasked with coming up with a way to generate BIRT reports in a La
 
 If you look at tutorials and how-to articles on the web for creating a Lambda function for Java you'll find they all suggest you use Maven to build a "fat jar" using the shade plugin.  A fat jar is one where all the other jars that your project depends on on are unpacked and re-packed into one big jar that also contains your classes, hence the term "fat jar".  It's superficially a neat concept, but if you think about it you realize there are situations where this just won't work, such as where you have a collision of class names in unrelated jars or dependencies on two different versions of the same jar.  The solution to this is the "shading" process, which is where classes are renamed as necessary during the packing process. This is another superfically neat concept but, again, there are many situations where it won't work. One such situation is where you have exotic class loaders such as OSGI, which is used by BIRT.  This stack exchange question describes the pros and cons of shading well:  https://softwareengineering.stackexchange.com/questions/297276/what-is-a-shaded-java-dependency.
 
-So, because of OSGI we can't pack all the BIRT dependencies into a fat jar.  Fortunately, Lambda will also accept a zip file containing your classes and all the dependencies in a lib folder.
+So, because of OSGI I couldn't pack all the BIRT dependencies into a fat jar.  Fortunately, Lambda will also accept a zip file containing the classes and all the dependencies in a lib folder.
 
-Once I was committed to building a zip file I realized Maven was no longer required, but I wanted to use it anyway.  I thought the BIRT runtime should exist as a Maven artifact because several years ago I created such an artifact and turned it over to the BIRT maintainers, but it appears they haven't kept it up.  It looks like BIRT hasn't worked in Maven since version 4.4.  But there are several ways to include a set of external jars into a Maven buid.  The way I did it was to run my own Nexus repository on my local machine and install all the BIRT runtime jars into it.  You can also install the jars straight into your .m2/repository directory.  Then I was able to create dependencies for each of these jars in my pom.xml file.  It was ugly but it worked.  
+Once I was committed to building a zip file I realized Maven was no longer required, but I wanted to use it anyway because it simplifies the build path.  However it looks like BIRT hasn't worked in Maven since version 4.4 so I created a repository in Maven Central which can be included with this dependency:
 
-The maven build created a jar file in the target directory which then needed to be included with all the dependencies in a zip file and uploaded to the Lambda function.  Except it wouldn't upload because it was too big.  So it had to be uploaded to S3 first and then the Lambda function could accept it from there.  S3 was needed anyway because the report design and resource files had to be stored somewhere and the output had to go somewhere and Lambda itself has an extremely limited file system.  You can have up to 512 megabytes in the /tmp directory and it's not permanent.  Now the BIRT runtime does require a file system for various things, so /tmp can be used for that.  It may be necessary to copy files from S3 into /tmp before running the report and copy files back the other way after the report is done, but accessing S3 is pretty simple.  In my case I just had to use /tmp to receive the output file and for logging.  
+	<dependency>
+		<groupId>com.innoventsolutions.birt.runtime</groupId>
+		<artifactId>org.eclipse.birt.runtime_4.8.0-20180626</artifactId>
+		<version>4.8.0</version>
+	</dependency>
+
+The scripts for building this repository are included in the project.
+
+Once this dependency exists, and the project has the maven nature, eclipse will automatically build all the class files into the target folder.  I created a bash script that builds the zip file from these classes and all the dependencies from the .m2 folder.  Unfortunately this zip file was too big to upload directly but it could be uploaded to S3 and then transferred to the Lambda function.
+
+S3 was needed anyway because the report design and resource files had to be stored somewhere and the output had to go somewhere and Lambda itself has a limited file system.  You can have up to 512 megabytes in the /tmp directory and it's not permanent.  I coded the report runner to copy the resource files from S3 to the /tmp directory before running the report and then copy the output file from /tmp back to S3 afterwords.  
 
 
 

@@ -50,21 +50,34 @@ There are three different ways to execute.
 This is some example JSON code that can be used for the Test button and non-proxy API Gateway requests:
 Note: sstest0323 is my S3 bucket name.  format can be any BIRT output format including pdf, xls, and html.
 
-    {
-      "designUrl": "s3:sstest0323/sqltest.rptdesign",
-      "outputBucket": "sstest0323",
-      "outputKey": "sql-test.html",
-      "parameters": {
-        "rowCount": 1
-      },
-      "format": "html",
-      "runThenRender": false
-    }
+	{
+	  "designUrl": "s3:sstest0323/bugzilla-bug.rptdesign",
+	  "outputBucket": "sstest0323",
+	  "outputKey": "bugzilla-bug.pdf",
+	  "parameters": {
+	    "product": "birt",
+	    "columns": "classification,component,creation_time,creator"
+	  },
+	  "resources": {
+	    "resources/bugzilla-birt-0.0.1-SNAPSHOT.jar": 
+	    	"s3:sstest0323/bugzilla-birt-0.0.1-SNAPSHOT.jar"
+	  },
+	  "format": "pdf",
+	  "runThenRender": false
+	}
+
+* designUrl is the S3 URL of the report design (s3:<bucket-name>/<path>).
+* outputBucket is the S3 bucket name where the report output should go.
+* outputKey is the path/filename of the report output.
+* parameters is a JSON object that describes the parameters to be passed to the report.  Each key is a parameter name.  Each value is a string, number, boolean, or array.
+* resources is a JSON object that describes the resource files that the report needs.  These files must exist in a S3 bucket.  Each key is the path to the resource as it is specified in the report design.  Each value is the S3 URL to the resource file.
+* format is a valid report format designator such as "pdf", "html", or "csv".
+* runThenRender is true if you want the report to be produced in separate run and render phases which produces a .rptdocument file as a byproduct.
 
 #### Example querystring parameters
-This is an example of querystring parameters to be used with an API Gateway proxy request.  Note that all parameters other than the ones starting with double-underscores will be passed through to the report.
+This is an example of querystring parameters to be used with an API Gateway proxy request.  The parameters are essentially the same as in the JSON format except that the parameter names start with double-underscore, resources is a comma-separated list of name/value pairs separated by equal-signs, and parameters are any querystring parameters that do not start with double-underscore.
 
-    __design_url=s3:sstest0323/test.rptdesign&__output_bucket=sstest0323&__output_key=test.pdf&rowCount=1&__format=pdf&__run_then_render=false
+    __design_url=s3:sstest0323/bugzilla-bug.rptdesign&__output_bucket=sstest0323&__output_key=bugzilla-bug.pdf&product=birt&columns=classification,component,creation_time,creator&__format=pdf&__run_then_render=false&__resources=resources/bugzilla-birt-0.0.1-SNAPSHOT.jar=s3:sstest0323/bugzilla-birt-0.0.1-SNAPSHOT.jar
 
 #### Using the Test button on the Lambda function management page
 1. Upload a report design file to your S3 location.

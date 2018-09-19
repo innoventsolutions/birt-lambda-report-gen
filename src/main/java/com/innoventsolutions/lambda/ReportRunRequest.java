@@ -10,6 +10,7 @@ public class ReportRunRequest {
 	private String format;
 	private boolean runThenRender;
 	private boolean runThenRenderSet = false;
+	private Map<String, String> resources;
 
 	public String getFormat() {
 		return format;
@@ -66,5 +67,13 @@ public class ReportRunRequest {
 
 	public void setRunThenRenderSet(final boolean runThenRenderSet) {
 		this.runThenRenderSet = runThenRenderSet;
+	}
+
+	public Map<String, String> getResources() {
+		return resources;
+	}
+
+	public void setResources(final Map<String, String> resources) {
+		this.resources = resources;
 	}
 }

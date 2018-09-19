@@ -30,6 +30,18 @@ public class ProxyRequestHandler extends BaseRequestHandler
 		if (runThenRender != null) {
 			rrRequest.setRunThenRender("true".equals(runThenRender));
 		}
+		final String resources = parameters.remove("__resources");
+		final String[] resourcesArray = resources == null ? null : resources.split(", *");
+		final Map<String, String> resourcesMap = new HashMap<>();
+		for (final String resource : resourcesArray) {
+			final int indexOfEq = resource.indexOf("=");
+			if (indexOfEq > 0) {
+				final String path = resource.substring(0, indexOfEq);
+				final String url = resource.substring(indexOfEq + 1);
+				resourcesMap.put(path, url);
+			}
+		}
+		rrRequest.setResources(resourcesMap);
 		rrRequest.setParameters(parameters);
 		final ReportRunResponse rrResponse = super.handleRequest(rrRequest);
 		final Map<String, String> headers = new HashMap<>();

@@ -2,6 +2,7 @@ package com.innoventsolutions.lambda;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -46,6 +47,7 @@ public abstract class BaseRequestHandler {
 			runThenRender = "true".equals(System.getenv("runThenRender"));
 		}
 		final Map<String, String> parameters = input.getParameters();
+		final Map<String, String> resources = input.getResources();
 		System.out.println("BaseRequestHandler.handleRequest");
 		System.out.println("  designUrl = " + designUrl);
 		System.out.println("  format = " + format);
@@ -53,6 +55,7 @@ public abstract class BaseRequestHandler {
 		System.out.println("  outputKey = " + outputKey);
 		System.out.println("  runThenRender = " + runThenRender);
 		System.out.println("  parameters = " + parameters);
+		System.out.println("  resources = " + resources);
 		final InputStream inputStream = this.getClass().getResourceAsStream(
 			"birt-runner.properties");
 		final Properties properties = new Properties();
@@ -69,6 +72,44 @@ public abstract class BaseRequestHandler {
 			final BirtEnvironment env = new BirtEnvironment(configuration);
 			final ReportRunner runner = new ReportRunner();
 			try {
+				if (resources != null) {
+					for (final String localResourcePath : resources.keySet()) {
+						final String resourceUrl = resources.get(localResourcePath);
+						System.out.println(String.format("Opening %s for input", resourceUrl));
+						final URLConnection connection = new URL(resourceUrl).openConnection();
+						connection.setDoInput(true);
+						final InputStream resourceInputStream = connection.getInputStream();
+						try {
+							final File tmpDir = new File("/tmp");
+							final File localResourceFile = new File(tmpDir, localResourcePath);
+							localResourceFile.getParentFile().mkdirs();
+							localResourceFile.createNewFile();
+							System.out.println(
+								String.format("Opening %s for output", localResourceFile));
+							int bufferCount = 0;
+							int totalBytesRead = 0;
+							final FileOutputStream fos = new FileOutputStream(localResourceFile);
+							try {
+								final byte[] buffer = new byte[0x10000];
+								int bytesRead = resourceInputStream.read(buffer);
+								while (bytesRead > -1) {
+									totalBytesRead += bytesRead;
+									bufferCount += 1;
+									fos.write(buffer, 0, bytesRead);
+									bytesRead = resourceInputStream.read(buffer);
+								}
+							}
+							finally {
+								fos.close();
+							}
+							System.out.println(String.format("Total bytes read = %d, buffers = %d",
+								totalBytesRead, bufferCount));
+						}
+						finally {
+							resourceInputStream.close();
+						}
+					}
+				}
 				final URLConnection connection = new URL(designUrl).openConnection();
 				connection.setDoInput(true);
 				final InputStream designInputStream = connection.getInputStream();
