@@ -1,0 +1,44 @@
+The bugzilla bugs report:
+
+As part of the birt-lambda project I was asked to create a BIRT report that used the Bugzilla REST interface as its data source.  There are a number of endpoints available but I think a list of bugs is the most useful so I chose that for my first report.
+
+Obtaining the data:
+
+Bugzilla provides a REST interface documented at https://bugzilla.readthedocs.io/en/latest/api/index.html.  
+
+I was able to use the native Java URLConnection to access the endpoints and the javascript JSON object to parse the returned JSON code so that no external libraries are required.  This means I'm using javascript to access the endpoint.  Were I using Java I would need a library for parsing the JSON and I could also consider a library for REST such as Jersy or HttpComponents.  But URLConnection is surprisingly easy to use and actually requires fewer lines of code than Jersey and HttpComponents.
+
+The endpoint url (GET /json/bug) can include many parameters to search within the overall list of bugs.  To make this as flexible as possible I extract the parameters passed to the report using reportContext.httpServletRequest.getParameterMap instead of defining the parameters explicitly.  Any parameters that are pass to the report in the URL will be passed on to the REST endpoint verbatim.  If it doesn't recognize a parameter, it just ignores it.
+
+The bugzilla bug search endpoint is documented here: https://bugzilla.readthedocs.io/en/latest/api/core/v1/bug.html#search-bugs.
+
+Defining the dataset:
+
+I use a scripted data set but I don't pre-define any columns.  Instead I use the describe method of the dataset to dynamically define the columns.  This was a bit challenging because that method isn't very well documented, at least not that I could find.  Ultimately I determined that the describe method should return a boolean true to indicate that it defined the columns and use this.addDataSetColumn(columnName, dataType) to define each column.  The dataType parameter must be one of "INTEGER", "DOUBLE", "DECIMAL", "DATE", "STRING", or "ANY".  Interestingly, there is no option for boolean, but it seems to work fine to use strings for booleans.
+
+The way I figured out to use addDataSetColumn (because it isn't documented) was to use the following code inside the describe method:
+
+for(var key in this) {
+	try {
+		out.println("*** this[" + key + "] = " + this[key]);
+	}
+	catch(e) {
+		out.println("*** this[" + key + "] error: " + e);
+	}
+}
+
+I had previously defined out.println to print out to a log file.  This produced a very large number of properties and methods, including addDataSetColumn.  It looked like it also included everything from System.getProperties() and many other things.  Searching for addDataSetColumn in the BIRT source code I found it was defined in org.eclipse.birt.data.engine.script.JSDataSetImpl which is where I found the list of acceptable data type strings.
+
+Another class in the BIRT source that provides useful information about what's available in any javascript method is org.eclipse.birt.report.engine.executor.ExecutionContext.
+
+I access the endpoint (GET /rest/bug) in the beforeFactory method of the report so that it will be available to the describe method, which is executed before the open method.  
+
+In the describe method I derive the column names from the actual JSON data, drilling into the object hierarchy so that all JSON elements are available as columns.  Unfortunately this doesn't include arrays.  Arrays are going to have to be sub-tables or sub-reports.  I'm desigating that as a phase two project for now.
+
+In the open method I just set an index variable to 0.  In fetch I get the current bug from the JSON array and increment the index.  Then I dynamically read all the elements from the bug using the for(key in object) construct, drilling into sub-objects if necessary.  For arrays I am just converting them to strings with JSON.stringify() for now.
+
+Creating the table:
+
+I use techniques described in this article: https://wiki.eclipse.org/Java_-_Build_Dynamic_Table_(BIRT) to build the table dynamically.  I chose to write this code in Java mainly because I prefer Java development in eclipse and also because I wanted to test the ability of AWS Lambda to handle dependent jar files.  I considered also using Java for the dataset and REST client but there is at least one thing I haven't figured out yet, which how to pass data between report.beforeFactory and the three dataset methods in Java.  I'll leave that for phase 2.
+
+I use a single parameter named "columns" to provide a comma-delimited list of column names.  For each of those names I create a column in the table with a column binding bound to the previously created scripted dataset.  I also create a header row containing the same names in labels.  I blindly use whatever names are provided.  If the user provides a name that doesn't exist in the dataset, the report will fail with a bad column binding error.
