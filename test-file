@@ -8,14 +8,14 @@ echo "mvn gpg:sign-and-deploy-file\
  -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/\
  -DrepositoryId=ossrh\
  -DpomFile=$POM\
- -Dgpg.passphrase=mash4-Folk-6adair\
+ -Dgpg.passphrase=$(gpg-password)\
  -Dfile=$FILENAME"
 JAVADOC_FILENAME=$($DIR/make-jarfile $FILENAME "javadoc")
 echo "mvn gpg:sign-and-deploy-file\
  -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/\
  -DrepositoryId=ossrh\
  -DpomFile=$POM\
- -Dgpg.passphrase=mash4-Folk-6adair\
+ -Dgpg.passphrase=$(gpg-password)\
  -Dfile=$JAVADOC_FILENAME\
  -Dclassifier=javadoc"
 SOURCES_FILENAME=$($DIR/make-jarfile $FILENAME "sources")
@@ -23,6 +23,6 @@ echo "mvn gpg:sign-and-deploy-file\
  -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/\
  -DrepositoryId=ossrh\
  -DpomFile=$POM\
- -Dgpg.passphrase=mash4-Folk-6adair\
+ -Dgpg.passphrase=$(gpg-password)\
  -Dfile=$SOURCES_FILENAME\
  -Dclassifier=sources"

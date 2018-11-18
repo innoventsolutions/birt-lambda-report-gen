@@ -17,14 +17,14 @@ if [[ $FILENAME =~ $FILTER ]]; then
 		 -Durl=$URL\
 		 -DrepositoryId=ossrh\
 		 -DpomFile=$POM\
-		 -Dgpg.passphrase=mash4-Folk-6adair\
+		 -Dgpg.passphrase=$(gpg-password)\
 		 -Dfile=$FILENAME && \
 		JAVADOC_FILENAME=$($DIR/make-jarfile $FILENAME "javadoc") && \
 		mvn -q gpg:sign-and-deploy-file\
 		 -Durl=$URL\
 		 -DrepositoryId=ossrh\
 		 -DpomFile=$POM\
-		 -Dgpg.passphrase=mash4-Folk-6adair\
+		 -Dgpg.passphrase=$(gpg-password)\
 		 -Dfile=$JAVADOC_FILENAME\
 		 -Dclassifier=javadoc && \
 		SOURCES_FILENAME=$($DIR/make-jarfile $FILENAME "sources") && \
@@ -32,7 +32,7 @@ if [[ $FILENAME =~ $FILTER ]]; then
 		 -Durl=$URL\
 		 -DrepositoryId=ossrh\
 		 -DpomFile=$POM\
-		 -Dgpg.passphrase=mash4-Folk-6adair\
+		 -Dgpg.passphrase=$(gpg-password)\
 		 -Dfile=$SOURCES_FILENAME\
 		 -Dclassifier=sources
 	fi

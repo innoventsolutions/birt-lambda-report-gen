@@ -12,3 +12,4 @@ test*.rptdocument
 /.settings/
 mvn.log
 *.zip
+gpg-password
